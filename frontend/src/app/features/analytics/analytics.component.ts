@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../../core/config/api.config';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -321,7 +322,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   loadAnalytics(): void {
-    this.http.get<{ success: boolean } & AnalyticsOverview>('http://localhost:3001/api/analytics/overview').subscribe({
+    this.http.get<{ success: boolean } & AnalyticsOverview>(`${getApiBaseUrl()}/analytics/overview`).subscribe({
       next: (res) => {
         if (res.success) {
           this.analytics.set(res);

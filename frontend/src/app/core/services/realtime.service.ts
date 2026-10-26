@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { ToastService } from './toast.service';
@@ -15,7 +16,7 @@ export interface RealtimePayload {
 export class RealtimeService implements OnDestroy {
   private readonly toast = inject(ToastService);
   private eventSource: EventSource | null = null;
-  private readonly STREAM_URL = 'http://localhost:3001/api/realtime/stream';
+  private readonly STREAM_URL = `${getApiBaseUrl()}/realtime/stream`;
 
   // Signals State
   public readonly isConnected = signal<boolean>(false);

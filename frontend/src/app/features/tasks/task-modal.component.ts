@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../../core/config/api.config';
 import { Component, input, output, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -339,7 +340,7 @@ export class TaskModalComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.http.get<{ success: boolean; users: User[] }>('http://localhost:3001/api/auth/users').subscribe({
+    this.http.get<{ success: boolean; users: User[] }>(`${getApiBaseUrl()}/auth/users`).subscribe({
       next: (res) => {
         if (res.success) this.users.set(res.users);
       }

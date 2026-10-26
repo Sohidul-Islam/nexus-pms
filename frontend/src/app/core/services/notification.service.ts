@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -10,7 +11,7 @@ import { RealtimeService } from './realtime.service';
 export class NotificationService {
   private readonly http = inject(HttpClient);
   private readonly realtime = inject(RealtimeService);
-  private readonly API_URL = 'http://localhost:3001/api/notifications';
+  private readonly API_URL = `${getApiBaseUrl()}/notifications`;
 
   // Signals State
   public readonly notifications = signal<UserNotification[]>([]);

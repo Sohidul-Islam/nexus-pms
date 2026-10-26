@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
@@ -10,7 +11,7 @@ import { ToastService } from './toast.service';
 export class TaskService {
   private readonly http = inject(HttpClient);
   private readonly toast = inject(ToastService);
-  private readonly API_URL = 'http://localhost:3001/api/tasks';
+  private readonly API_URL = `${getApiBaseUrl()}/tasks`;
 
   // Signals State
   public readonly tasks = signal<Task[]>([]);
@@ -130,7 +131,7 @@ export class TaskService {
   }
 
   public addComment(taskId: string, content: string): Observable<{ success: boolean; comment: TaskComment }> {
-    return this.http.post<{ success: boolean; comment: TaskComment }>(`http://localhost:3001/api/tasks/${taskId}/comments`, { content }).pipe(
+    return this.http.post<{ success: boolean; comment: TaskComment }>(`${getApiBaseUrl()}/tasks/${taskId}/comments`, { content }).pipe(
       tap(res => {
         if (res.success && res.comment) {
           this.taskComments.update(comments => [...comments, res.comment]);

@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../../core/config/api.config';
 import { IconComponent } from '../../shared/components/icon.component';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -423,7 +424,7 @@ export class OrganizationComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrgData();
-    this.http.get<{ success: boolean; users: User[] }>('http://localhost:3001/api/auth/users').subscribe({
+    this.http.get<{ success: boolean; users: User[] }>(`${getApiBaseUrl()}/auth/users`).subscribe({
       next: (res) => {
         if (res.success) this.allUsers.set(res.users);
       }
@@ -435,7 +436,7 @@ export class OrganizationComponent implements OnInit {
     if (!org) return;
 
     this.http.get<{ success: boolean; organization: Organization; members: OrganizationMember[] }>(
-      `http://localhost:3001/api/organizations/${org.id}`
+      `${getApiBaseUrl()}/organizations/${org.id}`
     ).subscribe({
       next: (res) => {
         if (res.success) {
@@ -451,7 +452,7 @@ export class OrganizationComponent implements OnInit {
     const org = this.currentOrg();
     if (!org) return;
 
-    this.http.put(`http://localhost:3001/api/organizations/${org.id}/members/${userId}`, { role }).subscribe({
+    this.http.put(`${getApiBaseUrl()}/organizations/${org.id}/members/${userId}`, { role }).subscribe({
       next: () => {
         this.toast.success('Role updated successfully.');
         this.loadOrgData();
@@ -474,7 +475,7 @@ export class OrganizationComponent implements OnInit {
     const org = this.currentOrg();
     if (!org) return;
 
-    this.http.post(`http://localhost:3001/api/organizations/${org.id}/members`, this.inviteForm.value).subscribe({
+    this.http.post(`${getApiBaseUrl()}/organizations/${org.id}/members`, this.inviteForm.value).subscribe({
       next: () => {
         this.toast.success('Member added to organization.');
         this.closeInviteModal();

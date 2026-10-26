@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -10,7 +11,7 @@ import { ToastService } from './toast.service';
 export class ProjectService {
   private readonly http = inject(HttpClient);
   private readonly toast = inject(ToastService);
-  private readonly API_URL = 'http://localhost:3001/api/projects';
+  private readonly API_URL = `${getApiBaseUrl()}/projects`;
 
   // State Signals
   public readonly projects = signal<Project[]>([]);

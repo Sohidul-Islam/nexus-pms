@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -14,7 +15,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
-  private readonly API_URL = 'http://localhost:3001/api';
+  private readonly API_URL = getApiBaseUrl();
   private readonly TOKEN_KEY = 'nexus_auth_token';
   private readonly USER_KEY = 'nexus_user_profile';
   private readonly ORG_KEY = 'nexus_active_org';

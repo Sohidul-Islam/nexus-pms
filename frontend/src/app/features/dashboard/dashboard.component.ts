@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../../core/config/api.config';
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -600,7 +601,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    this.http.get<{ success: boolean } & AnalyticsOverview>('http://localhost:3001/api/analytics/overview').subscribe({
+    this.http.get<{ success: boolean } & AnalyticsOverview>(`${getApiBaseUrl()}/analytics/overview`).subscribe({
       next: (res) => {
         if (res.success) {
           this.analytics.set(res);
@@ -608,7 +609,7 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    this.http.get<{ success: boolean; activities: Activity[] }>('http://localhost:3001/api/activities?limit=8').subscribe({
+    this.http.get<{ success: boolean; activities: Activity[] }>(`${getApiBaseUrl()}/activities?limit=8`).subscribe({
       next: (res) => {
         if (res.success) {
           this.activities.set(res.activities);

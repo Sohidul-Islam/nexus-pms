@@ -1,0 +1,35 @@
+{
+  "name": "nexus-pms-workspace",
+  "version": "1.0.0",
+  "description": "Production-grade Project Management System and Modern Angular Learning Showcase",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix backend",
+    "dev:all": "npx concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run start --prefix frontend",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "test": "npm run test --prefix backend",
+    "seed": "npm run seed --prefix backend"
+  },
+  "keywords": [
+    "angular",
+    "angular19",
+    "signals",
+    "rxjs",
+    "typescript",
+    "project-management",
+    "full-stack",
+    "sqlite",
+    "libsql",
+    "vercel"
+  ],
+  "author": "Antigravity Engineering Pair",
+  "license": "MIT",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

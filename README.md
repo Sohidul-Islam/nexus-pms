@@ -7,7 +7,8 @@
 [![Vercel Ready](https://img.shields.io/badge/Vercel-Deployment%20Ready-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-**Nexus PMS** is an enterprise-grade, portfolio-ready Project Management and Real-Time Telemetry System. Engineered for distributed engineering, maritime logistics, and high-velocity product teams (modeled after **Kobkiat Global Co., Ltd.**), it demonstrates real-world software engineering practices while serving as a comprehensive educational showcase for modern **Angular 19+ standalone architecture** paired with a **Node.js + SQLite/LibSQL** backend.
+
+**Nexus PMS** is an enterprise-grade,  portfolio-ready Project Management and Real-Time Telemetry System. Engineered for distributed engineering, maritime logistics, and high-velocity product teams (modeled after **Kobkiat Global Co., Ltd.**), it demonstrates real-world software engineering practices while serving as a comprehensive educational showcase for modern **Angular 19+ standalone architecture** paired with a **Node.js + SQLite/LibSQL** backend.
 
 ---
 

@@ -2,6 +2,7 @@ import { getApiBaseUrl } from '../config/api.config';
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { ToastService } from './toast.service';
+import { AuthService } from './auth.service';
 
 export interface RealtimePayload {
   type: 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_DELETED' | 'COMMENT_ADDED' | 'NOTIFICATION' | 'ACTIVITY' | 'CONNECTED';
@@ -15,6 +16,7 @@ export interface RealtimePayload {
 })
 export class RealtimeService implements OnDestroy {
   private readonly toast = inject(ToastService);
+  private readonly authService = inject(AuthService);
   private eventSource: EventSource | null = null;
   private readonly STREAM_URL = `${getApiBaseUrl()}/realtime/stream`;
 
@@ -51,7 +53,11 @@ export class RealtimeService implements OnDestroy {
           this.events$.next(data);
 
           if (data.type === 'NOTIFICATION' && data.payload?.title) {
-            this.toast.info(data.payload.title, 'Real-time Event');
+            const currentUserId = this.authService.currentUser()?.id;
+            // Only show toast if targeted specifically to this authenticated user
+            if (data.payload.userId && data.payload.userId === currentUserId) {
+              this.toast.info(data.payload.title, 'Notification');
+            }
           }
         } catch (e) {
           console.error('[Realtime] Failed to parse SSE event data', e);

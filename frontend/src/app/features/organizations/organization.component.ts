@@ -26,8 +26,9 @@ import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
           <p class="page-subtitle">Manage multi-tenant workspaces, team access, and role-based permissions</p>
         </div>
 
-        <button *appHasRole="['ADMIN', 'PROJECT_MANAGER']" class="btn btn-primary" (click)="openInviteModal()">
-          + Add Team Member
+        <button *appHasRole="['ADMIN', 'PROJECT_MANAGER']" class="btn btn-primary" (click)="openInviteModal()" style="display:inline-flex;align-items:center;gap:0.4rem;">
+          <app-icon name="plus" [size]="15" />
+          <span>Add Team Member</span>
         </button>
       </div>
 

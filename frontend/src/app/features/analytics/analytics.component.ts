@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AnalyticsOverview } from '../../core/models/analytics.model';
 import { InitialsPipe } from '../../shared/pipes/initials.pipe';
+import { IconComponent } from '../../shared/components/icon.component';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, InitialsPipe],
+  imports: [CommonModule, InitialsPipe, IconComponent],
   template: `
     <div class="analytics-page">
       <div class="page-header">
@@ -16,8 +18,15 @@ import { InitialsPipe } from '../../shared/pipes/initials.pipe';
           <h1 class="page-title">Executive Analytics & Velocity</h1>
           <p class="page-subtitle">Real-time team workload distribution and performance indicators</p>
         </div>
-        <button class="btn btn-secondary" (click)="loadAnalytics()">
-          ?? Refresh Metrics
+        <button
+          class="btn btn-secondary"
+          (click)="refreshMetrics()"
+          [disabled]="isRefreshing()"
+          style="display:inline-flex;align-items:center;gap:0.5rem;"
+          title="Refresh real-time analytics"
+        >
+          <app-icon name="refresh" [size]="15" [class.spin-icon]="isRefreshing()" />
+          <span>{{ isRefreshing() ? 'Refreshing...' : 'Refresh Metrics' }}</span>
         </button>
       </div>
 
@@ -315,18 +324,46 @@ import { InitialsPipe } from '../../shared/pipes/initials.pipe';
 })
 export class AnalyticsComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
   public readonly analytics = signal<AnalyticsOverview | null>(null);
+  public readonly isRefreshing = signal<boolean>(false);
 
   ngOnInit(): void {
-    this.loadAnalytics();
+    this.loadAnalytics(false);
   }
 
-  loadAnalytics(): void {
+  loadAnalytics(showToast: boolean = false): void {
     this.http.get<{ success: boolean } & AnalyticsOverview>(`${getApiBaseUrl()}/analytics/overview`).subscribe({
       next: (res) => {
         if (res.success) {
           this.analytics.set(res);
+          if (showToast) {
+            this.toast.success('Analytics overview refreshed successfully.', 'Metrics Updated');
+          }
         }
+      },
+      error: () => {
+        if (showToast) {
+          this.toast.error('Failed to refresh metrics. Please try again.', 'Error');
+        }
+      }
+    });
+  }
+
+  refreshMetrics(): void {
+    if (this.isRefreshing()) return;
+    this.isRefreshing.set(true);
+    this.http.get<{ success: boolean } & AnalyticsOverview>(`${getApiBaseUrl()}/analytics/overview`).subscribe({
+      next: (res) => {
+        this.isRefreshing.set(false);
+        if (res.success) {
+          this.analytics.set(res);
+          this.toast.success('Analytics overview refreshed successfully.', 'Metrics Updated');
+        }
+      },
+      error: () => {
+        this.isRefreshing.set(false);
+        this.toast.error('Failed to refresh metrics. Please try again.', 'Error');
       }
     });
   }

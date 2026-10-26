@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { StatCardComponent } from '../../shared/components/stat-card.component';
+import { IconComponent } from '../../shared/components/icon.component';
 import { AuthService } from '../../core/services/auth.service';
 import { AnalyticsOverview } from '../../core/models/analytics.model';
 import { Activity } from '../../core/models/activity.model';
@@ -13,7 +14,7 @@ import { RealtimeService } from '../../core/services/realtime.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatCardComponent, TimeAgoPipe],
+  imports: [CommonModule, RouterLink, StatCardComponent, TimeAgoPipe, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="dashboard-page">
@@ -27,7 +28,7 @@ import { RealtimeService } from '../../core/services/realtime.service';
         </div>
         <div class="header-actions">
           <a routerLink="/projects" class="btn btn-secondary">Explore Projects</a>
-          <a routerLink="/tasks" class="btn btn-primary">+ Kanban Board</a>
+          <a routerLink="/tasks" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.4rem;"><app-icon name="tasks" [size]="15" /> <span>Kanban Board</span></a>
         </div>
       </div>
 

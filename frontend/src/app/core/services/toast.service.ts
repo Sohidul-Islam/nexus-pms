@@ -14,38 +14,50 @@ export interface Toast {
 export class ToastService {
   // Angular Signal managing active toast notifications
   public readonly toasts = signal<Toast[]>([]);
-  private readonly maxToasts = 4;
-  private lastToastTime = 0;
-  private lastToastKey = '';
+  private readonly maxToasts = 3;
+  private readonly recentToastHistory = new Map<string, number>();
 
   public show(toast: Omit<Toast, 'id'>): void {
-    const key = toast.type + ':' + toast.message;
+    const rawMsg = (toast.message || '').trim();
+    if (!rawMsg) return;
+
+    const normalizedKey = (toast.type + ':' + rawMsg).toLowerCase();
     const now = Date.now();
 
-    // Deduplicate identical toasts fired in rapid succession (< 1500ms)
-    if (key === this.lastToastKey && now - this.lastToastTime < 1500) {
+    // 1. Suppress identical messages fired within 2500ms (debounce & deduplicate)
+    const lastSeen = this.recentToastHistory.get(normalizedKey);
+    if (lastSeen && now - lastSeen < 2500) {
       return;
     }
-    this.lastToastKey = key;
-    this.lastToastTime = now;
+    this.recentToastHistory.set(normalizedKey, now);
 
-    // Check if an identical toast is already active in the list
-    if (this.toasts().some(t => t.type === toast.type && t.message === toast.message)) {
+    // Garbage-collect old history entries
+    if (this.recentToastHistory.size > 30) {
+      for (const [k, timestamp] of this.recentToastHistory.entries()) {
+        if (now - timestamp > 10000) {
+          this.recentToastHistory.delete(k);
+        }
+      }
+    }
+
+    // 2. Prevent duplicate messages currently displayed
+    if (this.toasts().some(t => t.message.trim().toLowerCase() === rawMsg.toLowerCase())) {
       return;
     }
 
     const id = 'toast-' + now + '-' + Math.random().toString(36).substring(2, 6);
-    const newToast: Toast = { ...toast, id, duration: toast.duration ?? 4000 };
+    const duration = toast.duration ?? (toast.type === 'error' ? 5000 : 3500);
+    const newToast: Toast = { ...toast, id, duration };
 
     this.toasts.update(current => {
       const next = [...current, newToast];
       return next.length > this.maxToasts ? next.slice(next.length - this.maxToasts) : next;
     });
 
-    if (newToast.duration && newToast.duration > 0) {
+    if (duration > 0) {
       setTimeout(() => {
         this.dismiss(id);
-      }, newToast.duration);
+      }, duration);
     }
   }
 
@@ -54,7 +66,7 @@ export class ToastService {
   }
 
   public error(message: string, title?: string): void {
-    this.show({ type: 'error', message, title: title || 'Error', duration: 5500 });
+    this.show({ type: 'error', message, title: title || 'Error', duration: 5000 });
   }
 
   public info(message: string, title?: string): void {
@@ -62,7 +74,7 @@ export class ToastService {
   }
 
   public warning(message: string, title?: string): void {
-    this.show({ type: 'warning', message, title: title || 'Warning' });
+    this.show({ type: 'warning', message, title: title || 'Warning', duration: 4500 });
   }
 
   public dismiss(id: string): void {

@@ -33,8 +33,9 @@ import { ProjectModalComponent } from './project-modal.component';
           <p class="page-subtitle">Track, orchestrate, and deliver strategic initiatives</p>
         </div>
 
-        <button *appHasRole="['ADMIN', 'PROJECT_MANAGER']" class="btn btn-primary" (click)="openCreateModal()">
-          <span>+ New Project</span>
+        <button *appHasRole="['ADMIN', 'PROJECT_MANAGER']" class="btn btn-primary" (click)="openCreateModal()" style="display:inline-flex;align-items:center;gap:0.4rem;">
+          <app-icon name="plus" [size]="15" />
+          <span>New Project</span>
         </button>
       </div>
 

@@ -64,8 +64,9 @@ import { TaskModalComponent } from './task-modal.component';
             />
           </div>
 
-          <button class="btn btn-primary" (click)="openCreateModal('TODO')">
-            + New Task
+          <button class="btn btn-primary" (click)="openCreateModal('TODO')" style="display:inline-flex;align-items:center;gap:0.4rem;">
+            <app-icon name="plus" [size]="15" />
+            <span>New Task</span>
           </button>
         </div>
       </div>
@@ -86,7 +87,7 @@ import { TaskModalComponent } from './task-modal.component';
               <h2 class="column-title">To Do</h2>
               <span class="column-count">{{ taskService.todoTasks().length }}</span>
             </div>
-            <button class="add-task-btn" (click)="openCreateModal('TODO')" title="Add task to To Do">+</button>
+            <button class="add-task-btn" (click)="openCreateModal('TODO')" title="Add task to To Do"><app-icon name="plus" [size]="14" /></button>
           </div>
 
           <div class="column-cards">
@@ -150,7 +151,7 @@ import { TaskModalComponent } from './task-modal.component';
               <h2 class="column-title">In Progress</h2>
               <span class="column-count">{{ taskService.inProgressTasks().length }}</span>
             </div>
-            <button class="add-task-btn" (click)="openCreateModal('IN_PROGRESS')" title="Add task to In Progress">+</button>
+            <button class="add-task-btn" (click)="openCreateModal('IN_PROGRESS')" title="Add task to In Progress"><app-icon name="plus" [size]="14" /></button>
           </div>
 
           <div class="column-cards">
@@ -214,7 +215,7 @@ import { TaskModalComponent } from './task-modal.component';
               <h2 class="column-title">Review</h2>
               <span class="column-count">{{ taskService.reviewTasks().length }}</span>
             </div>
-            <button class="add-task-btn" (click)="openCreateModal('REVIEW')" title="Add task to Review">+</button>
+            <button class="add-task-btn" (click)="openCreateModal('REVIEW')" title="Add task to Review"><app-icon name="plus" [size]="14" /></button>
           </div>
 
           <div class="column-cards">
@@ -278,7 +279,7 @@ import { TaskModalComponent } from './task-modal.component';
               <h2 class="column-title">Done</h2>
               <span class="column-count">{{ taskService.doneTasks().length }}</span>
             </div>
-            <button class="add-task-btn" (click)="openCreateModal('DONE')" title="Add task to Done">+</button>
+            <button class="add-task-btn" (click)="openCreateModal('DONE')" title="Add task to Done"><app-icon name="plus" [size]="14" /></button>
           </div>
 
           <div class="column-cards">

@@ -9,7 +9,8 @@
     "start": "node dist/index.js",
     "seed": "tsx src/db/seed.ts",
     "test": "tsx tests/api.test.ts",
-    "build:backend": "tsc"
+    "build:backend": "tsc",
+    "build:frontend": "true"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

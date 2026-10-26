@@ -23,7 +23,7 @@ app.use(express.json());
 
 // Request Logger
 app.use((req, _res, next) => {
-  if (config.nodeEnv !== 'test') {
+  if (config.nodeEnv !== 'test' && !process.env.VERCEL) {
     console.log(`[HTTP] ${req.method} ${req.url}`);
   }
   next();
@@ -61,7 +61,7 @@ export async function bootstrap() {
     await runMigrations();
     await seedDatabase();
 
-    if (config.nodeEnv !== 'test') {
+    if (config.nodeEnv !== 'test' && !process.env.VERCEL) {
       app.listen(config.port, () => {
         console.log(`=======================================================`);
         console.log(`  ?? Nexus Enterprise PMS API Server Running`);

@@ -10,7 +10,7 @@
     "dev:frontend": "npm run start --prefix frontend",
     "build": "npm run build --prefix backend && npm run build --prefix frontend",
     "build:backend": "npm run build --prefix backend",
-    "build:frontend": "npm run build --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend && node scripts/copy-build.js",
     "test": "npm run test --prefix backend",
     "seed": "npm run seed --prefix backend"
   },

@@ -4,10 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && node ../scripts/copy-build.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "build:frontend": "ng build"
+    "build:frontend": "ng build && node ../scripts/copy-build.js"
   },
   "private": true,
   "dependencies": {

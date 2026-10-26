@@ -1,4 +1,4 @@
-# Database Architecture & Persistence in Nexus PMS
+﻿# Database Architecture & Persistence in Nexus PMS
 
 This document details the database schema, entity relationships, query patterns, indexing strategy, and hybrid persistence architecture designed for **Nexus PMS**.
 
@@ -7,26 +7,27 @@ This document details the database schema, entity relationships, query patterns,
 ## 1. Persistence Architecture: Local SQLite & Vercel Cloud Compatibility
 
 ### The Serverless SQLite Challenge
-Traditional Node.js SQLite drivers (`sqlite3`, `better-sqlite3`) compile native C++ binaries (gyp bindings) and rely on a persistent local filesystem. When deployed to serverless environments such as **Vercel Functions** or **AWS Lambda**:
+Traditional Node.js SQLite drivers (`sqlite3`, `better-sqlite3`) compile native C++ binaries and rely on a persistent local filesystem. When deployed to serverless environments such as **Vercel Functions** or **AWS Lambda**:
 1. Filesystem writes are ephemeral; changes made inside a serverless invocation vanish upon container teardown.
 2. Read-only limitations in serverless environments can block database creation.
 3. Concurrent serverless instances cannot coordinate writes to an uncoordinated flat file without file locking corruption.
 
 ### The Solution: Hybrid Driver with `@libsql/client`
-Nexus PMS uses `@libsql/client` (an open-source fork of SQLite maintained by the creators of Turso). This provides a **unified API** that works in two modes without changing a single line of backend application code:
+Nexus PMS uses `@libsql/client` (maintained by Turso). This provides a **unified API** that works in two modes without changing a single line of backend application code:
 
 ```
-??????????????????????????????????????????????????????????
-?             Nexus PMS Backend Database Layer           ?
-?                 (backend/src/db/client.ts)             ?
-??????????????????????????????????????????????????????????
-                            ?
-              ?????????????????????????????
-              ?                           ?
++--------------------------------------------------------+
+|             Nexus PMS Backend Database Layer           |
+|                 (backend/src/db/client.ts)             |
++---------------------------+----------------------------+
+                            |
+              +-------------+-------------+
+              |                           |
+              v                           v
    Development / Local CLI      Production / Vercel Serverless
-   ???????????????????????      ??????????????????????????????
-   Driver: `@libsql/client`     Driver: `@libsql/client`
-   URL: `file:./data/nexus.db`  URL: `libsql://your-db.turso.io`
+   -----------------------      ------------------------------
+   Driver: @libsql/client       Driver: @libsql/client
+   URL: file:./data/nexus.db    URL: libsql://your-db.turso.io
    Target: Embedded SQLite file Target: Distributed Cloud LibSQL
    Zero-network offline dev     Global persistence & replication
 ```
@@ -127,7 +128,7 @@ erDiagram
         text task_id FK
         text user_id FK
         text action
-        text details_json
+        text details
         text created_at
     }
 
@@ -164,7 +165,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-### 2. `organizations` & `organization_members`
+### 2. `organizations` and `organization_members`
 Enables multi-tenancy and team rosters.
 ```sql
 CREATE TABLE IF NOT EXISTS organizations (

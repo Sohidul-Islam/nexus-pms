@@ -1,97 +1,96 @@
-# Nexus PMS ? Full-Stack System Architecture
+﻿# System Architecture & Technical Specifications
 
-This document describes the high-level architecture, subsystem boundaries, data flow pipelines, and technical design decisions powering the Nexus Enterprise Project Management System.
-
----
-
-## 1. High-Level System Architecture
-
-```mermaid
-graph TD
-    Client["Angular 19+ SPA (Standalone, Signals, RxJS)"]
-    API["Node.js / Express REST & SSE Server"]
-    DB[("SQLite Persistent Storage (@libsql/client)")]
-    CloudDB[("Turso LibSQL Cloud Cluster (Vercel Production)")]
-
-    Client -->|"HTTP Requests (JWT Bearer Auth)"| API
-    Client -->|"SSE Live Stream (/api/realtime/stream)"| API
-    API -->|"Local Persistence (file:./data/nexus.db)"| DB
-    API -.->|"Cloud Remote (libsql://...)"| CloudDB
-```
+This document defines the high-level architecture, module boundaries, data flows, and design patterns implemented in **Nexus PMS**.
 
 ---
 
-## 2. Frontend Subsystem Architecture (`/frontend`)
+## 1. Architectural Philosophy
 
-The frontend adheres to an enterprise-grade modular structure divided into three distinct layers:
+Nexus PMS follows a **Pragmatic Reactive Architecture** designed to balance development speed, type safety, testability, and extreme runtime performance.
 
-```
-frontend/src/app/
-??? core/         # Singleton services, state stores, guards, HTTP interceptors, models
-??? features/     # Feature-oriented lazy-loaded standalone components
-??? shared/       # Reusable presentational components, directives, and pure pipes
-```
-
-### Layer Responsibilities
-
-1. **`core/` (Application Backbone)**:
-   - **`auth/`**:
-     - `auth.guard.ts`: Functional route guard inspecting authentication signals.
-     - `role.guard.ts`: Functional guard enforcing RBAC constraints defined on route metadata.
-     - `auth.interceptor.ts`: Attaches `Authorization: Bearer <token>` to outbound requests.
-     - `error.interceptor.ts`: Intercepts 401 Unauthorized responses to trigger automatic logout and navigation.
-   - **`models/`**: Strongly-typed interfaces for `User`, `Organization`, `Project`, `Task`, `Comment`, `Activity`, and `Analytics`.
-   - **`services/`**: Domain services (`AuthService`, `ProjectService`, `TaskService`, `NotificationService`, `RealtimeService`, `ThemeService`, `ToastService`).
-
-2. **`features/` (Domain Workflows)**:
-   - **`auth/`**: Login, registration, and quick-switch demo accounts.
-   - **`dashboard/`**: Executive telemetry, KPI metric cards, project velocity meters, and live activity streams.
-   - **`projects/`**: Portfolio listing, debounced search filtering, project charter detail views, and creation modals.
-   - **`tasks/`**: Interactive 4-column Kanban board with HTML5 drag-and-drop status transitions, task modals, and threaded comments.
-   - **`organizations/`**: Multi-tenant workspace controls, member management tables, and role administration.
-   - **`analytics/`**: Engineering workload distribution matrix and SVG priority breakdown charts.
-   - **`settings/`**: User profile configuration, password changes, and dark/light theme switching.
-
-3. **`shared/` (Reusable Elements)**:
-   - **Components**: `NavbarComponent`, `SidebarComponent`, `ModalComponent`, `StatCardComponent`, `ToastContainerComponent`.
-   - **Directives**: `HasRoleDirective` (`*appHasRole`), `TooltipDirective` (`[appTooltip]`), `PriorityHighlightDirective` (`[appPriorityHighlight]`).
-   - **Pipes**: `TimeAgoPipe`, `PriorityBadgePipe`, `StatusBadgePipe`, `InitialsPipe`, `SearchFilterPipe`.
+### Architectural Principles
+1. **Unidirectional Data Flow**: Data flows down via Signals and pure inputs; actions flow up via explicit service methods and events.
+2. **Push-Based Reactivity**: 100% of presentation components run on `ChangeDetectionStrategy.OnPush`. Angular change detection executes only when an input reference changes, a template signal updates, or an event listener fires.
+3. **Decoupled Business Logic**: Components remain lean view coordinators; all state, HTTP calls, caching, and domain logic reside inside injectable singleton services.
+4. **Resilient Persistence**: Backend persistence uses `@libsql/client` with dual-mode operational capability: zero-network local file in development and distributed LibSQL cloud in serverless production.
 
 ---
 
-## 3. Backend Subsystem Architecture (`/backend`)
-
-The backend is built with Node.js and TypeScript, designed for fast development iteration and seamless deployment to serverless environments (such as Vercel Functions):
+## 2. High-Level System Architecture
 
 ```
-backend/src/
-??? config/       # Environment variables, ports, secrets, DB connection URLs
-??? db/           # SQLite connection client, migration engine, comprehensive seed data
-??? middleware/   # Authentication, role-based authorization, centralized error handling
-??? realtime/     # EventBroadcaster hub managing SSE client streams
-??? routes/       # Domain routers (auth, org, project, task, comment, activity, analytics, realtime)
-??? index.ts      # Server bootstrap and Express application configuration
++------------------------------------------------------------------------------------+
+|                                BROWSER CLIENT                                      |
+|                                                                                    |
+|   +----------------------------------------------------------------------------+   |
+|   |                      Angular 19 Standalone Client                          |   |
+|   |                                                                            |   |
+|   |  Features (Lazy Loaded)          Core Layer               Shared Layer     |   |
+|   |  - Dashboard                     - AuthService            - IconComponent  |   |
+|   |  - Projects                      - ProjectService         - ModalComponent |   |
+|   |  - Tasks (Kanban)                - TaskService            - StatCard       |   |
+|   |  - Analytics                     - RealtimeService (SSE)  - Custom Pipes   |   |
+|   |  - Organizations                 - ThemeService           - Directives     |   |
+|   +---------------------------------------+------------------------------------+   |
++-------------------------------------------|----------------------------------------+
+                                            |
+                         HTTPS (REST JSON)  |  Server-Sent Events (SSE)
+                                            |
++-------------------------------------------|----------------------------------------+
+|                                  BACKEND                                           |
+|                                                                                    |
+|   +---------------------------------------v------------------------------------+   |
+|   |                         Node.js + Express API                              |   |
+|   |                                                                            |   |
+|   |  Middleware Layer:                                                         |   |
+|   |  - JWT Authentication Guard (authenticate)                                 |   |
+|   |  - Role-Based Access Control (requireRole: ADMIN, PM, DEV, VIEWER)         |   |
+|   |  - Centralized Error Handler                                               |   |
+|   |                                                                            |   |
+|   |  Domain Routers:                                                           |   |
+|   |  - /api/auth             - /api/projects        - /api/notifications       |   |
+|   |  - /api/tasks            - /api/organizations   - /api/analytics           |   |
+|   |  - /api/comments         - /api/activities      - /api/realtime/stream     |   |
+|   +---------------------------------------+------------------------------------+   |
+|                                           |                                        |
+|                                           v                                        |
+|   +----------------------------------------------------------------------------+   |
+|   |                  Database Layer (@libsql/client)                           |   |
+|   |  - Development: file:./data/nexus.db (Persistent local SQLite file)        |   |
+|   |  - Production:  libsql://nexus.turso.io (Distributed cloud LibSQL)        |   |
+|   +----------------------------------------------------------------------------+   |
++------------------------------------------------------------------------------------+
 ```
-
-### Real-Time Event Hub (`src/realtime/events.ts`)
-- Implements a pub/sub event broadcaster leveraging Server-Sent Events (SSE).
-- Enables instant multi-client synchronization: when an engineer drags a task from *In Progress* to *Review*, the event is broadcasted across all active client streams in under 50ms without polling.
 
 ---
 
-## 4. Architectural Decision Records (ADRs)
+## 3. Directory Layout & Module Responsibilities
 
-### ADR-01: Angular Signals as Primary State Store over NgRx
-- **Context**: State management in Angular has historically relied on NgRx or RxJS BehaviorSubjects.
-- **Decision**: Adopt Angular 19 native Signals (`signal`, `computed`, `effect`) backed by lightweight domain services.
-- **Rationale**: Signals provide fine-grained reactivity with zero boilerplate. Unlike RxJS Observables, reading a Signal in a template does not require the `async` pipe or manual unsubscribe tracking. Signals offer superior change detection performance with `OnPush`.
+### Frontend (`frontend/src/app`)
+- **`core/`**: Singleton domain services (`AuthService`, `ProjectService`, `TaskService`, `RealtimeService`, `ThemeService`, `ToastService`), HTTP interceptors, functional guards, and typed models.
+- **`shared/`**: Reusable presentational components (`IconComponent`, `ModalComponent`, `StatCardComponent`, `NavbarComponent`, `SidebarComponent`), structural directives (`hasRole`), and pure pipes (`TimeAgoPipe`, `PriorityBadgePipe`, `StatusBadgePipe`).
+- **`features/`**: Feature-oriented lazy-loaded standalone components (`dashboard`, `projects`, `tasks`, `analytics`, `organizations`, `settings`, `auth`).
 
-### ADR-02: SQLite with LibSQL (`@libsql/client`) for Database Persistence
-- **Context**: The application required SQLite persistence compatible with both local development and Vercel serverless deployments.
-- **Decision**: Use `@libsql/client`.
-- **Rationale**: Standard `better-sqlite3` uses native C++ compilation which frequently fails in serverless environments, and raw local file SQLite is ephemeral on Vercel. `@libsql/client` seamlessly operates over a local file (`file:./data/nexus.db`) in development, and transparently routes to a persistent cloud Turso LibSQL database in production without altering a single query.
+### Backend (`backend/src`)
+- **`config/`**: Environment variables, ports, secrets, DB connection URLs.
+- **`db/`**: SQLite connection client, migration engine, comprehensive seed data.
+- **`middleware/`**: Authentication, role-based authorization, centralized error handling.
+- **`realtime/`**: EventBroadcaster hub managing SSE client streams.
+- **`routes/`**: Domain routers (auth, org, project, task, comment, activity, analytics, realtime).
+- **`index.ts`**: Server bootstrap and Express application configuration.
 
-### ADR-03: Server-Sent Events (SSE) for Real-Time Telemetry
-- **Context**: The maritime and logistics domain requires live tracking updates and collaborative status moves.
-- **Decision**: Implement SSE over HTTP (`/api/realtime/stream`) with automatic reconnection and fallback.
-- **Rationale**: SSE operates cleanly through standard HTTP/2 proxies, firewalls, and serverless hosting with less overhead than bidirectional WebSockets, perfectly suiting notification feeds and Kanban movements.
+---
+
+## 4. Key Architectural Decisions (ADR)
+
+### ADR 1: Angular Signals for State Management
+- **Decision**: Adopt native Angular Signals (`signal`, `computed`, `effect`) within singleton services instead of heavy external stores (like NgRx).
+- **Rationale**: Built directly into Angular's change detection engine; avoids unnecessary boilerplate while providing fine-grained reactivity and glitch-free computed state.
+
+### ADR 2: Hybrid SQLite & LibSQL Persistence
+- **Decision**: Use `@libsql/client` instead of standard native `sqlite3`.
+- **Rationale**: Enables zero-configuration local flat-file storage during development, while seamlessly scaling to Turso's serverless cloud SQLite for Vercel production deployments without code changes.
+
+### ADR 3: Server-Sent Events (SSE) for Real-Time Telemetry
+- **Decision**: Implement real-time synchronization using unidirectional HTTP Server-Sent Events (SSE) rather than bidirectional WebSockets.
+- **Rationale**: Native browser auto-reconnect, zero custom handshake overhead, traverses corporate HTTP/2 proxies cleanly, and fits the publish-subscribe telemetry profile of project activity updates.

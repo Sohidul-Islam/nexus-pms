@@ -62,8 +62,8 @@ export async function seedDatabase(): Promise<void> {
   const orgs = [
     {
       id: 'org-kobkiat-01',
-      name: 'Kobkiat Global Logistics & Tech',
-      slug: 'kobkiat-global',
+      name: 'Fashion GLory company limited',
+      slug: 'fashion-glory',
       description: 'International Maritime Logistics & Supply Chain Software Solutions',
       plan: 'Enterprise Tier'
     },

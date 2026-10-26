@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/components/icon.component';
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -7,12 +8,12 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, IconComponent],
   template: `
     <div class="auth-page">
       <div class="auth-card">
         <div class="auth-brand">
-          <div class="auth-logo">?</div>
+          <div class="auth-logo"><app-icon name="logo" [size]="28" /></div>
           <h1 class="auth-title">Welcome to Nexus</h1>
           <p class="auth-subtitle">Sign in to your enterprise project management workspace</p>
         </div>
@@ -55,7 +56,7 @@ import { AuthService } from '../../core/services/auth.service';
             @if (isLoading()) {
               <span>Signing In...</span>
             } @else {
-              <span>Sign In to Workspace ?</span>
+              <span style="display:inline-flex;align-items:center;gap:0.45rem;">Sign In to Workspace <app-icon name="arrow-right" [size]="16" /></span>
             }
           </button>
         </form>

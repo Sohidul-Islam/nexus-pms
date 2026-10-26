@@ -14,12 +14,33 @@ export interface Toast {
 export class ToastService {
   // Angular Signal managing active toast notifications
   public readonly toasts = signal<Toast[]>([]);
+  private readonly maxToasts = 4;
+  private lastToastTime = 0;
+  private lastToastKey = '';
 
   public show(toast: Omit<Toast, 'id'>): void {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const key = toast.type + ':' + toast.message;
+    const now = Date.now();
+
+    // Deduplicate identical toasts fired in rapid succession (< 1500ms)
+    if (key === this.lastToastKey && now - this.lastToastTime < 1500) {
+      return;
+    }
+    this.lastToastKey = key;
+    this.lastToastTime = now;
+
+    // Check if an identical toast is already active in the list
+    if (this.toasts().some(t => t.type === toast.type && t.message === toast.message)) {
+      return;
+    }
+
+    const id = 'toast-' + now + '-' + Math.random().toString(36).substring(2, 6);
     const newToast: Toast = { ...toast, id, duration: toast.duration ?? 4000 };
 
-    this.toasts.update(current => [...current, newToast]);
+    this.toasts.update(current => {
+      const next = [...current, newToast];
+      return next.length > this.maxToasts ? next.slice(next.length - this.maxToasts) : next;
+    });
 
     if (newToast.duration && newToast.duration > 0) {
       setTimeout(() => {

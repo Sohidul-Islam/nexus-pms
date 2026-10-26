@@ -1,10 +1,11 @@
+import { IconComponent } from './icon.component';
 import { Component, input, output, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isOpen()) {
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
         <div class="modal-dialog" [style.max-width]="maxWidth()" role="dialog" aria-modal="true">
           <div class="modal-header">
             <h3 class="modal-title">{{ title() }}</h3>
-            <button class="modal-close" (click)="close.emit()" aria-label="Close modal">?</button>
+            <button class="modal-close" (click)="close.emit()" aria-label="Close modal"><app-icon name="close" [size]="15" /></button>
           </div>
           <div class="modal-body">
             <ng-content select="[body]"></ng-content>

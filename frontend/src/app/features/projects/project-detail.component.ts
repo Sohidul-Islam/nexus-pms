@@ -16,7 +16,7 @@ import { InitialsPipe } from '../../shared/pipes/initials.pipe';
       <div class="project-detail-page">
         <!-- Breadcrumbs & Back -->
         <div class="breadcrumb-row">
-          <a routerLink="/projects" class="back-link">? Back to Projects</a>
+          <a routerLink="/projects" class="back-link">&larr; Back to Projects</a>
           <span class="sep">/</span>
           <span class="curr-proj">{{ data.project.key }}</span>
         </div>

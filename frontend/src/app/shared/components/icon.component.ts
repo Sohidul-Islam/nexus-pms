@@ -98,12 +98,16 @@ import { CommonModule } from '@angular/common';
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
           <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
         }
-                @case ('trash') {
+        @case ('trash') {
           <polyline points="3 6 5 6 21 6"></polyline>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
         }
         @case ('check') {
           <polyline points="20 6 9 17 4 12"></polyline>
+        }
+        @case ('check-circle') {
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
         }
         @case ('plus') {
           <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -118,11 +122,55 @@ import { CommonModule } from '@angular/common';
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         }
+        @case ('warning') {
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        }
+        @case ('error') {
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        }
+        @case ('info') {
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        }
+        @case ('close') {
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        }
+        @case ('x') {
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        }
         @case ('chevron-left') {
           <polyline points="15 18 9 12 15 6"></polyline>
         }
         @case ('chevron-right') {
           <polyline points="9 18 15 12 9 6"></polyline>
+        }
+        @case ('chevron-down') {
+          <polyline points="6 9 12 15 18 9"></polyline>
+        }
+        @case ('chevron-up') {
+          <polyline points="18 15 12 9 6 15"></polyline>
+        }
+        @case ('arrow-left') {
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        }
+        @case ('arrow-right') {
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        }
+        @case ('lock') {
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        }
+        @case ('shield') {
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         }
         @case ('logo') {
           <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>

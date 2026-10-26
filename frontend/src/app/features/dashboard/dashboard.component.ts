@@ -74,7 +74,7 @@ import { RealtimeService } from '../../core/services/realtime.service';
           <div class="card">
             <div class="card-header">
               <h2 class="card-title">Key Projects Velocity</h2>
-              <a routerLink="/projects" class="card-link">View all ?</a>
+              <a routerLink="/projects" class="card-link" style="display:inline-flex;align-items:center;gap:0.3rem;">View all &rarr;</a>
             </div>
             <div class="project-progress-list">
               @for (proj of data.projects.slice(0, 4); track proj.id) {
@@ -157,7 +157,7 @@ import { RealtimeService } from '../../core/services/realtime.service';
         <div class="card timeline-card">
           <div class="card-header">
             <h2 class="card-title">Live Audit & Activity Feed</h2>
-            <span class="live-tag">? Streaming Active</span>
+            <span class="live-tag">&#9679; Streaming Active</span>
           </div>
 
           <div class="activity-timeline">

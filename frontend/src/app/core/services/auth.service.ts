@@ -97,14 +97,17 @@ export class AuthService {
     this.toast.info(`Switched workspace to ${org.name}`);
   }
 
-  public logout(): void {
+  public logout(notify: boolean = true): void {
+    const wasLoggedIn = !!this.token() || !!this.currentUser();
     this.token.set(null);
     this.currentUser.set(null);
     this.currentOrg.set(null);
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.ORG_KEY);
-    this.toast.info('You have been logged out.');
+    if (notify && wasLoggedIn) {
+      this.toast.info('You have been logged out.');
+    }
     this.router.navigate(['/auth/login']);
   }
 

@@ -95,7 +95,7 @@ import { TimeAgoPipe } from '../pipes/time-ago.pipe';
                 <span class="user-name-text">{{ user.name }}</span>
                 <span class="user-role-text">{{ user.role }}</span>
               </div>
-              <span class="chevron">?</span>
+              <span class="chevron"><app-icon name="chevron-down" [size]="13" /></span>
             </button>
 
             @if (showUserDropdown()) {
